@@ -1,6 +1,6 @@
 namespace AOC2025.Day01;
 
-public static class SolverForDay1
+public static class Day01
 {
     public static void Solve()
     {
