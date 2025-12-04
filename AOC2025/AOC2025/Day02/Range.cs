@@ -1,12 +1,21 @@
 namespace AOC2025.Day02;
 
-public class Range(string min, string max)
+public class Range()
 {
-    public string Min { get; } = min;
-    public long LongMin { get; } = long.Parse(min);
-    public string Max { get; } = max;
-    public long LongMax { get; } = long.Parse(max);
-    public bool MinOddDigits() => Min.Length % 2 == 1;
+    public Range(string min, string max) : this()
+    {
+        Min = min; 
+        LongMin  = long.Parse(min); 
+        Max  = max; 
+        LongMax  = long.Parse(max);
+    }
+
+    private string Min { get; }
+    public long LongMin { get; }
+    private string Max { get; }
+    public long LongMax { get; }
+
+    private bool MinOddDigits() => Min.Length % 2 == 1;
     public bool MaxOddDigits() => Max.Length % 2 == 1;
     public HashSet<string> GuiltyNumbers { get; set; } = [];
 

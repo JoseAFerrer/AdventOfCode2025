@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 
 namespace AOC2025.Day02;
 
@@ -22,28 +23,25 @@ public static class Day02
 
     private static void HandleRange(Range range)
     {
-        // this might ignore some valid cases if the range is something like 8-100 (11, 22, 33...),
-        // but it is unlikely this will happen for large numbers. It might be worth considering though.
-        if (range.BothNumbersHaveOddNumberOfDigits()) return;
-
-        var overMax = false; 
-        var current = range.GetFirstEvenDigitNumberInRange();
-        var currentAsString = current.ToString();
-        if (current is null) overMax = true;
-        while (!overMax)
+        for (var current = range.LongMin; current < range.LongMax+1; current++)
         {
-            var half = currentAsString!.Length / 2;
-            var firstHalf = currentAsString[..half];
-            var guiltyCandidate = firstHalf + firstHalf;
-            range.AddGuiltyToListIfInRange(guiltyCandidate);
-            
-            // 78 -> "7" -> "8" -> 88 < max? test and yes? repeat. no? end
-            var nextFirstHalf = long.Parse(firstHalf)+1;
-            currentAsString = nextFirstHalf.ToString() + nextFirstHalf;
-
-            if (long.Parse(currentAsString) > range.LongMax)
+            var digits = current.ToString().Length;
+            var currentString = current.ToString();
+            for (var j = 1; j <= digits / 2; j++)
             {
-                overMax = true;
+                var repeatedSection = currentString[..j];
+                var repeatCount = digits / j;
+
+                var agg = new StringBuilder();
+                for (var i = 0; i < repeatCount; i++)
+                {
+                    agg = agg.Append(repeatedSection);
+                }
+
+                if (agg.ToString() == currentString)
+                {
+                    range.AddGuiltyToListIfInRange(currentString);
+                }
             }
         }
 
