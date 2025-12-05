@@ -24,14 +24,22 @@ public class Bank
     public long CalculateComplexJoltage()
     {
         var batteriesToWorkWith = Batteries;
-        var batteriesToStoreResult = new int[Batteries.Count];
+        var batteriesToStoreResult = Enumerable.Repeat(0, Batteries.Count).ToList();
 
-        for (int i = 0; i < 12; i++)
+        for (var i = 0; i < 12; i++)
         {
-            var currentHighestNumber = batteriesToWorkWith.Max(); 
-            var indexOfHighest = batteriesToWorkWith.LastIndexOf(currentHighestNumber);
+            var lastNonZeroValueOrZero = batteriesToStoreResult.LastOrDefault(x => x != 0);
+            var indexOfLastNonZeroValue = lastNonZeroValueOrZero == 0
+                ? 0
+                : batteriesToStoreResult.LastIndexOf(lastNonZeroValueOrZero);
+            
+            var currentHighestNumber = batteriesToWorkWith.SkipLast(11-i).Max(); 
+            var indexOfHighest = batteriesToWorkWith.IndexOf(currentHighestNumber);
             batteriesToStoreResult[indexOfHighest] = currentHighestNumber;
-            batteriesToWorkWith[indexOfHighest] = 0;
+            for (var j = 0; j <= indexOfHighest; j++)
+            {
+                batteriesToWorkWith[j] = 0;
+            }
         }
 
         var joltageAsString = string.Concat(batteriesToStoreResult.Select(x => x != 0 

@@ -6,7 +6,7 @@ public static class Day03
 {
     public static void Solve()
     {        
-        var input = FileHelpers.ReadInputLines(3, FileHelpers.Input.Sample);
+        var input = FileHelpers.ReadInputLines(3, FileHelpers.Input.Real);
         var banks = input.Select(ConvertInputToLineToBank).ToArray();
 
         long joltageCounter = 0;
