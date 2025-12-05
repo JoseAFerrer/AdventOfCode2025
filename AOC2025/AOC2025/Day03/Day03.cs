@@ -6,13 +6,13 @@ public static class Day03
 {
     public static void Solve()
     {        
-        var input = FileHelpers.ReadInputLines(3, FileHelpers.Input.Real);
+        var input = FileHelpers.ReadInputLines(3, FileHelpers.Input.Sample);
         var banks = input.Select(ConvertInputToLineToBank).ToArray();
 
-        var joltageCounter = 0;
+        long joltageCounter = 0;
         foreach (var bank in banks)
         {
-            joltageCounter += bank.CalculateJoltage();
+            joltageCounter += bank.CalculateComplexJoltage();
             Console.WriteLine("Joltage: " + joltageCounter);
         }
         
