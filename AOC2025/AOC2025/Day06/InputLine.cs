@@ -4,32 +4,19 @@ public class InputLine
 {
     public InputLine(string line)
     {
-        var lineWithoutWhitespace = line.Replace("   ", " ").Replace("  ", " ");
-        if (lineWithoutWhitespace.Contains('+'))
-        {
-            LineType = LineType.Operators;
-            Operators = lineWithoutWhitespace
-                .Split(' ')
-                .Where(x => x != string.Empty)
-                .ToList();
-        }
-        else
-        { 
-            LineType = LineType.Numbers;
-            Numbers = lineWithoutWhitespace
-                .Split(' ')
-                .Where(x => x != string.Empty)
-                .Select(int.Parse)
-                .ToList();
-        }
+        Line = line;
+        if (IsEmpty) return;
+        var trimmedAndWithoutLastChar = string.Join("", line.SkipLast(1)).Trim();
+        Number = int.Parse(trimmedAndWithoutLastChar);
+        Op = line.Last() == ' '
+            ? null
+            : line.Last() == '+'
+                ? Operator.Add
+                : Operator.Multiply;
     }
-    public LineType LineType { get; set; }
-    public List<int> Numbers { get; set; } = [];
-    public List<string> Operators { get; set; } = [];
-}
 
-public enum LineType
-{
-    Numbers,
-    Operators,
+    public bool IsEmpty => string.IsNullOrWhiteSpace(Line);
+    public string Line { get; set; }
+    public long Number { get; set; }
+    public Operator? Op { get; set; }
 }

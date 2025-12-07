@@ -2,7 +2,7 @@ namespace AOC2025.Day06;
 
 public class Operation
 {
-    public Operation(Operator op, params long[] args)
+    public Operation(Operator op, long[] args)
     {
         Op = op;
         Numbers = args;
