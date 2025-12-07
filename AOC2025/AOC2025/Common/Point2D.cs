@@ -71,12 +71,27 @@ public struct Point2D :
     {
         var minusOneToOne = _minusOneToOne;
         foreach ((int x, int y) in from y in minusOneToOne
-                                   from x in minusOneToOne
-                                   where (!(x == 0 && y == 0))
-                                   select (x, y))
+                 from x in minusOneToOne
+                 where (!(x == 0 && y == 0))
+                 select (x, y))
         {
             yield return new Point2D(x + X, y + Y);
         }
+    }
+    
+    public readonly Point2D GetDownNeighbor()
+    {
+        return new Point2D(X, Y - 1);
+    }
+    
+    public readonly Point2D GetWestNeighbor()
+    {
+        return new Point2D(X -1, Y);
+    }
+    
+    public readonly Point2D GetEastNeighbor()
+    {
+        return new Point2D(X + 1, Y);
     }
 
     public readonly IEnumerable<Point2D> GetOrthogonalNeighbors(int step = 1)
