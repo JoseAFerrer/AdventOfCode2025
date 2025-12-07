@@ -19,6 +19,8 @@ public struct Point2D :
     private const int LessThan = -1;
     private const int EqualTo = 0;
     private const int GreaterThan = 1;
+    private readonly int[] _minusOneToOne = [-1, 0, 1];
+
 
     private int _x;
     private int _y;
@@ -67,8 +69,9 @@ public struct Point2D :
 
     public readonly IEnumerable<Point2D> GetAllNeighbors()
     {
-        foreach ((int x, int y) in from y in Enumerable.Range(-1, 3)
-                                   from x in Enumerable.Range(-1, 3)
+        var minusOneToOne = _minusOneToOne;
+        foreach ((int x, int y) in from y in minusOneToOne
+                                   from x in minusOneToOne
                                    where (!(x == 0 && y == 0))
                                    select (x, y))
         {
