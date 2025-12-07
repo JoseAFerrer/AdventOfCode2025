@@ -3,5 +3,6 @@ using AOC2025.Day02;
 using AOC2025.Day03;
 using AOC2025.Day04;
 using AOC2025.Day05;
+using AOC2025.Day06;
 
-Day05.Solve();
+Day06.Solve();
