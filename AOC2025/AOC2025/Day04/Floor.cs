@@ -4,5 +4,5 @@ namespace AOC2025.Day04;
 
 public class Floor
 {
-    public List<Point2D> PaperRolls { get; set; } = [];
+    public Dictionary<Point2D, bool> PaperRollsAndHasBeenRemoved { get; set; } = [];
 }

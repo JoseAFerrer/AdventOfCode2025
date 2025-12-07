@@ -6,21 +6,37 @@ public class Day04
 {
     public static void Solve()
     {
-        var input = Enumerable.ToArray(Enumerable.Reverse(FileHelpers.ReadInputLines(4, FileHelpers.Input.Real)));
+        var input = FileHelpers.ReadInputLines(4, FileHelpers.Input.Real).Reverse().ToArray();
         var floor = CreateFloorWithPaperRolls(input);
 
         var accessibleCounter = 0;
-        foreach (var roll in floor.PaperRolls)
+        for (int i = 0; i < 80; i++)
+        {
+            Console.WriteLine($"Step {i}, counter: {accessibleCounter}. Remaining {floor.PaperRollsAndHasBeenRemoved.Count(v => !v.Value)}");
+            accessibleCounter = CalculateAccessibleRollsAndMarkThemAsRemoved(floor, accessibleCounter);
+        }
+        
+        Console.WriteLine(accessibleCounter);
+    }
+
+    private static int CalculateAccessibleRollsAndMarkThemAsRemoved(Floor floor, int accessibleCounter)
+    {
+        var paperRollsNotYetRemoved = floor
+            .PaperRollsAndHasBeenRemoved
+            .Where(v => !v.Value).ToDictionary();
+        
+        foreach (var (roll, _) in paperRollsNotYetRemoved)
         {
             var neighbors = roll.GetAllNeighbors();
-            var howManyNeighborsAreRollsToo = neighbors.Count(x => floor.PaperRolls.Contains(x));
-            var rollIsAccessible = howManyNeighborsAreRollsToo  < 4;
-            if (rollIsAccessible)
-            {
-                accessibleCounter++;
-            };
+            var howManyNeighborsAreRollsToo = neighbors
+                .Count(x => paperRollsNotYetRemoved.ContainsKey(x) && !paperRollsNotYetRemoved[x]);
+
+            if (howManyNeighborsAreRollsToo >= 4) continue;
+            accessibleCounter++;
+            floor.PaperRollsAndHasBeenRemoved[roll] = true;
         }
-        Console.WriteLine(accessibleCounter);
+
+        return accessibleCounter;
     }
 
     private static Floor CreateFloorWithPaperRolls(string[] input)
@@ -31,7 +47,7 @@ public class Day04
             var line = input[i];
             for (int j = 0; j < line.Length; j++)
             {
-                if (line[j] == '@') floor.PaperRolls.Add(new Point2D(i, j));
+                if (line[j] == '@') floor.PaperRollsAndHasBeenRemoved.Add(new Point2D(i, j), false);
             }
         }
 
