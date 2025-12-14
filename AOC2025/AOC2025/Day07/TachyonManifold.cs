@@ -83,7 +83,7 @@ public class TachyonManifold
         var relevantWorlds = Worlds.Where(w => w.LastPoint == currentCoords).ToList();
         foreach (var worldThatContinuesOnWest in relevantWorlds)
         {
-            var worldThatContinuesOnEast = new World(worldThatContinuesOnWest);
+            var worldThatContinuesOnEast = new World();
             worldThatContinuesOnEast.Add(downNeighborCoords.GetEastNeighbor());
             Worlds.Add(worldThatContinuesOnEast);
             
@@ -100,7 +100,7 @@ public class TachyonManifold
         if (!downNeighborExists || downNeighbor == null) throw new ArgumentException();
         downNeighbor.HasBeamPassedThrough = true;
         downNeighbor.Symbol = '|';
-        Worlds = [new World(){Points = [start.Key, downNeighborCoords], LastPoint = downNeighborCoords}];
+        Worlds = [new World(){LastPoint = downNeighborCoords}];
 
     }
 }
