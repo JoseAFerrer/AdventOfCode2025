@@ -14,7 +14,7 @@ public static class ManifoldPrinter
             for (int j = 0; j < manifold.Columns; j++)
             {
                 var point = manifold.Points[new Point2D(j, i)];
-                rowToPrint.Append(point.Symbol);
+                rowToPrint.Append("_" + point.WorldsWhereParticlePassesThroughHere + "_");
             }
 
             Console.WriteLine(rowToPrint);

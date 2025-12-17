@@ -25,5 +25,5 @@ public class TachyonPoint
     public bool HasBeamPassedThrough { get; set; }
     public bool IsChecked { get; set; }
     public bool BeamSplitWhilePassing { get; set; }
-    public bool WorldsCalculated { get; set; }
+    public long WorldsWhereParticlePassesThroughHere { get; set; }
 }

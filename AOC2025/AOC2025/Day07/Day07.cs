@@ -12,7 +12,7 @@ public class Day07
         var split = manifold.Points.Values.Count(x => x.BeamSplitWhilePassing);
         Console.WriteLine($"The beam split {split} times");
         
-        var worldCount = manifold.Worlds.Count;
+        var worldCount = manifold.WorldCount;
         Console.WriteLine($"This manifold generates {worldCount} worlds");
     }
 }

@@ -24,7 +24,7 @@ public class TachyonManifold
     public int Rows { get; set; }
     public int Columns { get; set; }
     public Dictionary<Point2D, TachyonPoint> Points { get; set; } = [];
-    public List<World> Worlds { get; set; } = [];
+    public long WorldCount => Points.Where(p => p.Key.Y == 0).Sum(p => p.Value.WorldsWhereParticlePassesThroughHere);
 
     public void SendTachyonBeam()
     {
@@ -41,7 +41,7 @@ public class TachyonManifold
 
             sw.Stop();
             var elapsed = sw.ElapsedMilliseconds;
-            Console.WriteLine($"Completed row {i}/{Rows}. {Worlds.Count} worlds. Time: {elapsed/1000}s");
+            Console.WriteLine($"Completed row {i}/{Rows}. Time: {elapsed/1000}s");
         }
     }
 
@@ -56,39 +56,24 @@ public class TachyonManifold
         {
             nextDownNeighbor.HasBeamPassedThrough = true;
             nextDownNeighbor.Symbol = '|';
-            UpdateWorlds(coords, downNeighborCoords);
+            nextDownNeighbor.WorldsWhereParticlePassesThroughHere += point.WorldsWhereParticlePassesThroughHere;
             return;
         }
 
-        SplitBeamAroundSplitter(point, coords, downNeighborCoords);
+        SplitBeamAroundSplitter(point, downNeighborCoords);
     }
 
-    private void UpdateWorlds(Point2D coords, Point2D downNeighborCoords)
-    {
-        var relevantWorlds = Worlds.Where(w => w.LastPoint == coords).ToList();
-        foreach (var world in relevantWorlds)
-            world.Add(downNeighborCoords);
-    }
-
-    private void SplitBeamAroundSplitter(TachyonPoint point, Point2D currentCoords, Point2D downNeighborCoords)
+    private void SplitBeamAroundSplitter(TachyonPoint point, Point2D downNeighborCoords)
     {
         point.BeamSplitWhilePassing = true;
         var westNeighbor = Points[downNeighborCoords.GetWestNeighbor()];
         var eastNeighbor = Points[downNeighborCoords.GetEastNeighbor()];
         westNeighbor.HasBeamPassedThrough = true;
         westNeighbor.Symbol = '|';
+        westNeighbor.WorldsWhereParticlePassesThroughHere += point.WorldsWhereParticlePassesThroughHere;
         eastNeighbor.HasBeamPassedThrough = true;
         eastNeighbor.Symbol = '|';
-        
-        var relevantWorlds = Worlds.Where(w => w.LastPoint == currentCoords).ToList();
-        foreach (var worldThatContinuesOnWest in relevantWorlds)
-        {
-            var worldThatContinuesOnEast = new World();
-            worldThatContinuesOnEast.Add(downNeighborCoords.GetEastNeighbor());
-            Worlds.Add(worldThatContinuesOnEast);
-            
-            worldThatContinuesOnWest.Add(downNeighborCoords.GetWestNeighbor());
-        }
+        eastNeighbor.WorldsWhereParticlePassesThroughHere += point.WorldsWhereParticlePassesThroughHere;
     }
 
     private void InitiateBeam()
@@ -100,7 +85,6 @@ public class TachyonManifold
         if (!downNeighborExists || downNeighbor == null) throw new ArgumentException();
         downNeighbor.HasBeamPassedThrough = true;
         downNeighbor.Symbol = '|';
-        Worlds = [new World(){LastPoint = downNeighborCoords}];
-
+        downNeighbor.WorldsWhereParticlePassesThroughHere = 1;
     }
 }
