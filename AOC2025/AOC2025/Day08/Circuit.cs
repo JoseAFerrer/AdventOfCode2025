@@ -12,9 +12,10 @@ public class Circuit
     public List<JBox> Boxes { get; set; }
     public string Id { get; set; }
     public string ClosestCircuitId { get; set; }
+    public double DistanceToClosest { get; set; }
     
     public double DistanceTo(Circuit other)
     {
-        return Boxes.SelectMany(x => Boxes.Select(y => y.Point.DistanceTo(x.Point))).Min();
+        return Boxes.SelectMany(x => other.Boxes.Select(y => y.Point.DistanceTo(x.Point))).Min();
     }
 }

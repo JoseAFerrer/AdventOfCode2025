@@ -19,7 +19,7 @@ public class Point3D
 
     public double DistanceTo(Point3D other)
     {
-        return Math.Sqrt((X - other.X)^2 + (Y - other.Y)^2 + (Z - other.Z));
+        return Math.Sqrt(Math.Pow(X - other.X, 2) + Math.Pow(Y - other.Y, 2) + Math.Pow(Z - other.Z, 2));
     }
 
     public long X { get; set; }
