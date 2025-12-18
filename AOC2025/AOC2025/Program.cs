@@ -5,5 +5,6 @@ using AOC2025.Day04;
 using AOC2025.Day05;
 using AOC2025.Day06;
 using AOC2025.Day07;
+using AOC2025.Day08;
 
-Day07.Solve();
+Day08.Solve();
