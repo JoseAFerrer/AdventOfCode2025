@@ -10,6 +10,7 @@ public class Circuit
         Boxes = points.ToList();
     }
     public List<JBox> Boxes { get; set; }
+    public string BoxesLocations => string.Join("--", Boxes.Select(x => x.PointAsString));
     public string Id { get; set; }
     public string ClosestCircuitId { get; set; }
     public double DistanceToClosest { get; set; }

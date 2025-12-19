@@ -6,18 +6,52 @@ public class Day08
 {
     public static void Solve()
     {
-        var input = FileHelpers.ReadInputLines(8, FileHelpers.Input.Sample);
+        const FileHelpers.Input inputType = FileHelpers.Input.Sample;
+        var circuits = GetCircuits(inputType);
+        CalculateDistancesToClosest(circuits);
+
+        for (var i = 0; i < 10; i++)
+        {
+            var minDistance = circuits.Min(x => x.DistanceToClosest);
+            
+            var firstCircuit = circuits.First(x => x.DistanceToClosest <= minDistance);
+            var secondCircuit = circuits.First(x => x.Id == firstCircuit.ClosestCircuitId);
+            
+            CombineTwoCircuits(firstCircuit, secondCircuit, circuits);
+
+            circuits.Remove(secondCircuit);
+        }
+    }
+
+    private static void CombineTwoCircuits(Circuit firstCircuit, Circuit secondCircuit, List<Circuit> circuits)
+    {
+        Console.WriteLine($"Combining circuits with boxes {firstCircuit.BoxesLocations} and {secondCircuit.BoxesLocations} with distance {firstCircuit.DistanceToClosest}");
+        firstCircuit.Boxes.AddRange(secondCircuit.Boxes);
+        firstCircuit.DistanceToClosest = circuits.Max(x => x.DistanceToClosest);
+        foreach (var iteratingCircuit in circuits)
+        {
+            if (iteratingCircuit.ClosestCircuitId != secondCircuit.Id) continue;
+                
+            iteratingCircuit.ClosestCircuitId = firstCircuit.Id;
+            if (iteratingCircuit.DistanceToClosest <= firstCircuit.DistanceToClosest)
+            {
+                firstCircuit.DistanceToClosest = iteratingCircuit.DistanceToClosest;
+                firstCircuit.ClosestCircuitId = iteratingCircuit.Id;
+            }
+        }
+    }
+
+    private static List<Circuit> GetCircuits(FileHelpers.Input inputType)
+    {
+        var input = FileHelpers.ReadInputLines(8, inputType);
         var circuits = input
             .Select(line => new JBox(line))
             .Select(x => new Circuit([x]))
-            .ToArray();
-        
-        CalculateDistancesToClosest(circuits);
-
-        var close = circuits.Where(x => x.DistanceToClosest < 320);
+            .ToList();
+        return circuits;
     }
 
-    private static void CalculateDistancesToClosest(Circuit[] circuits)
+    private static void CalculateDistancesToClosest(List<Circuit> circuits)
     {
         foreach (var circuit in circuits)
         {
