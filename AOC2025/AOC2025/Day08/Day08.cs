@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using AOC2025.Common;
 
 namespace AOC2025.Day08;
@@ -7,26 +8,14 @@ public class Day08
     
     public static void Solve()
     {
-        const FileHelpers.Input inputType = FileHelpers.Input.Sample;
-        var circuits = GetCircuits(inputType);
-        var links = CalculateDistances(circuits)
-            .Distinct(new LinkEqualityComparer())
-            .OrderBy(x => x.Distance)
-            .ToList();
+        var sw =  Stopwatch.StartNew();
+        const int numberOfCables = 1000;
+        var (circuits, links) = GetLinksAndCircuits(FileHelpers.Input.Real, numberOfCables);
 
-        const int numberOfCables = 10;
-
+        Console.WriteLine("Elapsed time: " + sw.ElapsedMilliseconds);
         foreach (var link in links.Take(numberOfCables))
         {
-            var a = link.A;
-            var circuitA = circuits.FirstOrDefault(x => x.Boxes.Contains(a))!;
-            var b = link.B;
-            var circuitB = circuits.FirstOrDefault(x => x.Boxes.Contains(b))!;
-
-            if (circuitA.Id == circuitB.Id) continue;
-            
-            Console.WriteLine($"Combining circuits with boxes {circuitA.BoxesLocations} and {circuitB.BoxesLocations} with distance {link.Distance}");
-            CombineAndRemoveSecond(circuitA, circuitB, circuits);
+            HandleLink(link, circuits);
         }
 
         Console.WriteLine("Number of circuits: " + circuits.Count);
@@ -35,6 +24,27 @@ public class Day08
                           + orderedCircuits[0].Boxes.Count 
                           * orderedCircuits[1].Boxes.Count
                           * orderedCircuits[2].Boxes.Count);
+    }
+
+    private static (List<Circuit> circuits, List<Link> links) GetLinksAndCircuits(FileHelpers.Input inputType, int numberOfCables)
+    {
+        var circuits = GetCircuits(inputType);
+        var links = CalculateDistances(circuits, numberOfCables)
+            .OrderBy(x => x.Distance)
+            .Take(numberOfCables)
+            .ToList();
+        return (circuits, links);
+    }
+
+    private static void HandleLink(Link link, List<Circuit> circuits)
+    {
+        var a = link.A;
+        var circuitA = circuits.FirstOrDefault(x => x.Boxes.Contains(a))!;
+        var b = link.B;
+        var circuitB = circuits.FirstOrDefault(x => x.Boxes.Contains(b))!;
+
+        if (circuitA.Id == circuitB.Id) return;
+        CombineAndRemoveSecond(circuitA, circuitB, circuits);
     }
 
     private static void CombineAndRemoveSecond(Circuit firstCircuit, Circuit secondCircuit, List<Circuit> circuits)
@@ -53,16 +63,32 @@ public class Day08
         return circuits;
     }
 
-    private static IEnumerable<Link> CalculateDistances(List<Circuit> circuits)
+    private static IEnumerable<Link> CalculateDistances(List<Circuit> circuits, int numberOfCables)
     {
+        var checkedKeys = new HashSet<(string a, string b)>();
+        var currentMax = 0.0;
+        var length = 0;
+        var finalList = new List<Link>();
         foreach (var a in circuits)
         {
             var others = circuits.Except([a]);
             foreach (var b in others)
             {
-                var link = new Link(a.Boxes.First(), b.Boxes.First());
-                yield return link;
+                if (checkedKeys.Contains((b.BoxesLocations, a.BoxesLocations))) continue;
+                var d = a.Boxes.First().Point.DistanceTo(b.Boxes.First().Point);
+                if (d > currentMax && length > numberOfCables) continue;
+                
+                length++;
+                currentMax = Math.Max(d, currentMax);
+                checkedKeys.Add((a.BoxesLocations, b.BoxesLocations));
+                finalList.Add(new Link(a.Boxes.First(), b.Boxes.First(), d));
+
+                if (finalList.Count < numberOfCables * 4) continue;
+                
+                finalList = finalList.OrderBy(x => x.Distance).Take(numberOfCables).ToList();
+                currentMax = finalList.Last().Distance;
             }
         }
+        return finalList;
     }
 }
