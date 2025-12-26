@@ -15,18 +15,18 @@ public class Day08
             .ToList();
 
         const int numberOfCables = 10;
-        for (var i = 0; i < numberOfCables; i++)
+
+        foreach (var link in links.Take(numberOfCables))
         {
-            if (circuits.Count == 1)
-            {
-                break;
-            }
-            var minDistance = circuits.Min(x => x.DistanceToClosest);
+            var a = link.A;
+            var circuitA = circuits.FirstOrDefault(x => x.Boxes.Contains(a))!;
+            var b = link.B;
+            var circuitB = circuits.FirstOrDefault(x => x.Boxes.Contains(b))!;
+
+            if (circuitA.Id == circuitB.Id) continue;
             
-            var firstCircuit = circuits.First(x => x.DistanceToClosest <= minDistance);
-            var secondCircuit = circuits.First(x => x.Id == firstCircuit.ClosestCircuitId);
-            
-            CombineAndRemoveSecond(firstCircuit, secondCircuit, circuits);
+            Console.WriteLine($"Combining circuits with boxes {circuitA.BoxesLocations} and {circuitB.BoxesLocations} with distance {link.Distance}");
+            CombineAndRemoveSecond(circuitA, circuitB, circuits);
         }
 
         Console.WriteLine("Number of circuits: " + circuits.Count);
@@ -34,33 +34,8 @@ public class Day08
 
     private static void CombineAndRemoveSecond(Circuit firstCircuit, Circuit secondCircuit, List<Circuit> circuits)
     {
-        Console.WriteLine($"Combining circuits with boxes {firstCircuit.BoxesLocations} and {secondCircuit.BoxesLocations} with distance {firstCircuit.DistanceToClosest}");
         firstCircuit.Boxes.AddRange(secondCircuit.Boxes);
         circuits.Remove(secondCircuit);
-        var tempD = 1000.0;
-        firstCircuit.DistanceToClosest = tempD;
-        firstCircuit.ClosestCircuitId = "";
-        foreach (var current in circuits.Except([firstCircuit]))
-        {
-            if (current.ClosestCircuitId == secondCircuit.Id) current.ClosestCircuitId = firstCircuit.Id;
-            
-            if (current.ClosestCircuitId == firstCircuit.Id &&
-                current.DistanceToClosest > firstCircuit.DistanceToClosest) 
-                continue;
-
-            var distanceToFirst = current.DistanceTo(firstCircuit);
-            if (distanceToFirst < firstCircuit.DistanceToClosest)
-            {
-                firstCircuit.SetNewClosestCircuit(current.Id, distanceToFirst);
-            }
-            
-            if (distanceToFirst < current.DistanceToClosest)
-            {
-                current.SetNewClosestCircuit(firstCircuit.Id, distanceToFirst);
-            }
-        }
-        
-        
     }
 
     private static List<Circuit> GetCircuits(FileHelpers.Input inputType)
@@ -85,5 +60,4 @@ public class Day08
             }
         }
     }
-}
 }
