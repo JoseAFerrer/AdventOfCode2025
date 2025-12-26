@@ -30,6 +30,11 @@ public class Day08
         }
 
         Console.WriteLine("Number of circuits: " + circuits.Count);
+        var orderedCircuits = circuits.OrderByDescending(x => x.Boxes.Count).ToArray();
+        Console.WriteLine("Circuit index: " 
+                          + orderedCircuits[0].Boxes.Count 
+                          * orderedCircuits[1].Boxes.Count
+                          * orderedCircuits[2].Boxes.Count);
     }
 
     private static void CombineAndRemoveSecond(Circuit firstCircuit, Circuit secondCircuit, List<Circuit> circuits)
