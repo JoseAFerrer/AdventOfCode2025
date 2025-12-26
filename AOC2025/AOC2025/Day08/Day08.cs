@@ -9,9 +9,12 @@ public class Day08
     {
         const FileHelpers.Input inputType = FileHelpers.Input.Sample;
         var circuits = GetCircuits(inputType);
-        const int numberOfCables = 10;
-        CalculateDistancesToClosest(circuits);
+        var links = CalculateDistances(circuits)
+            .Distinct(new LinkEqualityComparer())
+            .OrderBy(x => x.Distance)
+            .ToList();
 
+        const int numberOfCables = 10;
         for (var i = 0; i < numberOfCables; i++)
         {
             if (circuits.Count == 1)
@@ -70,18 +73,17 @@ public class Day08
         return circuits;
     }
 
-    private static void CalculateDistancesToClosest(List<Circuit> circuits)
+    private static IEnumerable<Link> CalculateDistances(List<Circuit> circuits)
     {
-        foreach (var circuit in circuits)
+        foreach (var a in circuits)
         {
-            var distancesAndIds = circuits
-                .Where(x => x.Id != circuit.Id)
-                .Select(x => new { x.Id, distance = x.DistanceTo(circuit)})
-                .OrderBy(x => x.distance)
-                .ToArray();
-            
-            circuit.ClosestCircuitId = distancesAndIds.First().Id;
-            circuit.DistanceToClosest = distancesAndIds.First().distance;
+            var others = circuits.Except([a]);
+            foreach (var b in others)
+            {
+                var link = new Link(a.Boxes.First(), b.Boxes.First());
+                yield return link;
+            }
         }
     }
+}
 }
