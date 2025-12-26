@@ -19,4 +19,10 @@ public class Circuit
     {
         return Boxes.SelectMany(x => other.Boxes.Select(y => y.Point.DistanceTo(x.Point))).Min();
     }
+
+    public void SetNewClosestCircuit(string id, double distance)
+    {
+        ClosestCircuitId = id;
+        DistanceToClosest = distance;
+    }
 }
