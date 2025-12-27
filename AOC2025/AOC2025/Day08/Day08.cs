@@ -9,21 +9,24 @@ public class Day08
     public static void Solve()
     {
         var sw =  Stopwatch.StartNew();
-        const int numberOfCables = 1000;
+        const int numberOfCables = 10000;
         var (circuits, links) = GetLinksAndCircuits(FileHelpers.Input.Real, numberOfCables);
 
+        var handledLink = links.Last();
         Console.WriteLine("Elapsed time: " + sw.ElapsedMilliseconds);
         foreach (var link in links.Take(numberOfCables))
         {
-            HandleLink(link, circuits);
+            handledLink = HandleLink(link, circuits);
+            if (circuits.Count == 1) break;
         }
 
-        Console.WriteLine("Number of circuits: " + circuits.Count);
-        var orderedCircuits = circuits.OrderByDescending(x => x.Boxes.Count).ToArray();
-        Console.WriteLine("Circuit index: " 
-                          + orderedCircuits[0].Boxes.Count 
-                          * orderedCircuits[1].Boxes.Count
-                          * orderedCircuits[2].Boxes.Count);
+        var x1 = handledLink.A.Point.X;
+        var x2 = handledLink.B.Point.X;
+        Console.WriteLine($"Last 2 boxes x coordinates: {x1}, {x2}");
+        Console.WriteLine($"Distance from the wall: {x1*x2}");
+        
+        // 1277378937 too low
+        // 3200955921
     }
 
     private static (List<Circuit> circuits, List<Link> links) GetLinksAndCircuits(FileHelpers.Input inputType, int numberOfCables)
@@ -36,15 +39,16 @@ public class Day08
         return (circuits, links);
     }
 
-    private static void HandleLink(Link link, List<Circuit> circuits)
+    private static Link HandleLink(Link link, List<Circuit> circuits)
     {
         var a = link.A;
         var circuitA = circuits.FirstOrDefault(x => x.Boxes.Contains(a))!;
         var b = link.B;
         var circuitB = circuits.FirstOrDefault(x => x.Boxes.Contains(b))!;
 
-        if (circuitA.Id == circuitB.Id) return;
+        if (circuitA.Id == circuitB.Id) return link;
         CombineAndRemoveSecond(circuitA, circuitB, circuits);
+        return link;
     }
 
     private static void CombineAndRemoveSecond(Circuit firstCircuit, Circuit secondCircuit, List<Circuit> circuits)
