@@ -20,19 +20,21 @@ public static class Day09
             {
                 var area = GetArea(first, second);
                 if (area > biggestSquare.Area)
+                {
                     biggestSquare = new Square(first, second, area);
+                    Console.WriteLine($"1: ({first.X},{first.Y}), 2: ({second.X},{second.Y}). Area : {area}");
+                }
             }
         }
 
-        Console.WriteLine($"Biggest square has area {biggestSquare.Area}");
         // 2147419104 too low
     }
 
     private static int GetArea(Point2D first, Point2D second)
     {
-        var xLength = Math.Abs(first.X -  second.X)+1;
-        var yLength = Math.Abs(first.Y -  second.Y)+1;
-        var area = xLength*yLength;
+        var xLength = Math.Abs(first.X -  second.X) + 1;
+        var yLength = Math.Abs(first.Y -  second.Y) + 1;
+        var area = xLength * yLength;
         return area;
     }
 }
